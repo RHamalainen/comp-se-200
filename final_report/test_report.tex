@@ -1,0 +1,252 @@
+% Constants.
+\newcommand{\constTitle}{E-Commerce Store Test Report}
+\newcommand{\constVersion}{v1.0.0}
+\newcommand{\constRepository}{\href{https://github.com/RHamalainen/comp-se-200}{github.com/RHamalainen/comp-se-200}}
+
+\documentclass[]{article}
+
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{geometry}
+\usepackage{vhistory}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{lastpage}
+\usepackage{titling}
+\usepackage{tikz}
+\usepackage{pgf-umlcd}
+\usepackage{tcolorbox}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{parskip}
+\usepackage{pgf-umlsd}
+\usepackage{paralist}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{microtype}
+
+\lstset{
+	basicstyle=\ttfamily,
+}
+
+%opening
+\title{\constTitle\\\constVersion\\COMP.SE.200 Software Testing\\\constRepository}
+\author{Roni Hämäläinen H284595\\Jere Kallioniemi 415545}
+
+\begin{document}
+
+\begin{titlingpage}
+	\maketitle
+\end{titlingpage}
+
+\pagestyle{fancy}
+
+\fancyhead{}
+\fancyhead[L]{\constTitle}
+\fancyhead[C]{\constVersion}
+\fancyhead[R]{\today}
+\fancyfoot{}
+%\fancyfoot[L]{}
+%\fancyfoot[C]{}
+\fancyfoot[R]{Page \thepage / \pageref{LastPage}}
+
+\tableofcontents
+
+\vspace*{\fill}
+
+\begin{versionhistory}
+	\vhEntry{1.0.0}{18.12.2022}{Everyone}{First version of this document.}
+\end{versionhistory}
+
+\newpage
+
+%\begin{abstract}
+%\end{abstract}
+
+\section{Definitions, Acronyms and Abbreviations}
+
+\textbf{E-commerce} means trading products via computer network \cite{dictionary_ecommerce}.
+
+\textbf{CI pipeline} is an abbreviation for \textit{continuous integration pipeline} which is a series of steps that are executed when an event is triggered \cite{ci-pipeline}. Example use case is to execute test cases before a new commit is approved to repository's main-branch.
+
+\section{Introduction}
+
+This document presents a test report for an e-commerce web store application.
+Contents include overview of implemented test cases and CI pipeline, and findings and conclusions.
+Team responsible for implementing the application can use described tests and bugs found with these test cases to improve their design.
+
+\section{Tests And CI Pipeline}
+
+Code base is stored in a remote repository hosted by GitHub.
+Test cases check the functionality described in function's documentation and also additional cases which are not documented but otherwise make sense or fit the function's intended purpose.
+Two GitHub CI pipelines were implemented to trigger when new code is pushed.
+First \textit{unit-tests}-pipeline checks the unit test cases using Jest and the other \textit{coveralls}-pipeline attempts to create coverage report using Coverall-service.
+Unfortunately Coverall-service did not recognize or find our repository even after multiple resyncs or waiting, so the \textit{coveralls}-pipeline is currently disabled.
+
+Command to execute unit tests on local machine is presented in figure \ref{lst:execute_tests}.
+Command to execute test coverage report on local machine is presented in figure \ref{lst:execute_coverage}.
+
+\begin{figure}[H]
+	\centering
+	%\scriptsize
+	\begin{lstlisting}
+		npm test
+	\end{lstlisting}
+	\caption{Command to execute unit tests on local machine.}
+	\label{lst:execute_tests}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	%\scriptsize
+	\begin{lstlisting}
+		npm test -- --coverage && coveralls < coverage/lcov.info
+	\end{lstlisting}
+	\caption{Command to get test coverage report on local machine.}
+	\label{lst:execute_coverage}
+\end{figure}
+
+\newpage
+\section{Findings And Conclusions}
+
+Total 56 unit tests for 10 different functionalities were written.
+Of these 56 test cases, 40 passes and 16 fails.
+Currently these failing cases mark both pipelines to be failed.
+Failed test cases with given inputs, expected outputs and actual outputs are presented in table \ref{tab:failed_tests}.
+Test coverage report is presented in figure \ref{lst:coverage-report}.
+
+Overall, library is \textbf{not ready for production} until all test cases pass.
+Coverage statistics imply that the library is not fully tested, so more coverage is needed.
+
+\begin{figure}[H]
+	\centering
+	\begin{tabularx}{\textwidth}{c c X X X}
+		\toprule
+		   & File                   & Input                                                            & Expected output                   & Actual output                                \\
+		\midrule
+		1  & \texttt{add.js}        & \texttt{[], 0}                                                   & \texttt{NaN}                      & \texttt{0}                                   \\
+		2  & \texttt{capitalize.js} & \texttt{NaN}                                                     & \texttt{undefined}                & \texttt{"NaN"}                               \\
+		3  & \texttt{capitalize.js} & \texttt{Object()}                                                & \texttt{undefined}                & \texttt{[object Object]}                     \\
+		4  & \texttt{capitalize.js} & \texttt{[]}                                                      & \texttt{undefined}                & \texttt{""}                                  \\
+		5  & \texttt{chunk.js}      & \texttt{["a", "b", "c", "d"], 2}                                 & \texttt{[["a", "b"], ["c", "d"]]} & \texttt{[undefined]}                         \\
+		6  & \texttt{chunk.js}      & \texttt{["a", "b", "c", "d"], 3}                                 & \texttt{[["a", "b", "c"], ["d"]]} & \texttt{[[undefined, undefined], undefined]} \\
+		7  & \texttt{chunk.js}      & \texttt{undefined, 2}                                            & \texttt{undefined}                & \texttt{[]}                                  \\
+		8  & \texttt{clamp.js}      & \texttt{10, -5, 5}                                               & \texttt{5}                        & \texttt{-5}                                  \\
+		9  & \texttt{countby.js}    & \texttt{Check \ref{lst:countby-users}, value => value.y}         & \texttt{{"true": 2, "false": 1}}  & \texttt{{"true": 1, "false": 0}}             \\
+		10 & \texttt{countby.js}    & \texttt{Check \ref{lst:countby-users}, value => !value.y}        & \texttt{{"true": 1, "false": 2}}  & \texttt{{"true": 1, "false": 0}}             \\
+		11 & \texttt{defaultTo.js}  & \texttt{Nan, 10}                                                 & \texttt{10}                       & \texttt{Failed}                              \\
+		12 & \texttt{filter.js}     & \texttt{Check \ref{lst:filter-users},  ({user}) => user === "d"} & \texttt{[]}                       & \texttt{Failed}                              \\
+		13 & \texttt{toString.js}   & \texttt{null}                                                    & \texttt{""}                       & \texttt{"null"}                              \\
+		14 & \texttt{toString.js}   & \texttt{Object()}                                                & \texttt{{}}                       & \texttt{[object Object]}                     \\
+		15 & \texttt{words.js}      & \texttt{undefined}                                               & \texttt{undefined}                & \texttt{Failed}                              \\
+		16 & \texttt{eq.js}         & \texttt{"a", Object("a")}                                        & \texttt{false}                    & \texttt{true}                                \\
+		\bottomrule
+	\end{tabularx}
+	\caption{Failed test cases. Check countby-function's input for first parameter at \ref{lst:countby-users}.}
+	\label{tab:failed_tests}
+\end{figure}
+
+\newpage
+
+\begin{figure}[H]
+	\centering
+	%\scriptsize
+	\begin{lstlisting}
+		const users = [
+			{"x": "a", "y": true},
+			{"x": "b", "y": true},
+			{"x": "c", "y": false},
+		];
+	\end{lstlisting}
+	\caption{Input to \texttt{countby}-function.}
+	\label{lst:countby-users}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	%\scriptsize
+	\begin{lstlisting}
+		const active_users = [
+			{"user": "a", "active": true},
+			{"user": "b", "active": true},
+		]
+
+		const inactive_users = [
+			{"user": "c", "active": false},
+		]
+
+		const users = active_users.concat(inactive_users)
+	\end{lstlisting}
+	\caption{Input to \texttt{filter}-function.}
+	\label{lst:filter-users}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\scriptsize
+	\begin{lstlisting}
+-------------------------|---------|----------|---------|---------|-------------------
+File                     | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------------|---------|----------|---------|---------|-------------------
+All files                |   69.27 |       40 |   56.86 |    69.2 |                   
+ src                     |   77.69 |    47.58 |   67.85 |   77.77 |                   
+  add.js                 |     100 |      100 |     100 |     100 |                   
+  capitalize.js          |     100 |      100 |     100 |     100 |                   
+  chunk.js               |      90 |    57.14 |     100 |      90 | 26                
+  clamp.js               |     100 |       60 |     100 |     100 | 22-24,26          
+  countBy.js             |     100 |      100 |     100 |     100 |                   
+  defaultTo.js           |     100 |      100 |     100 |     100 |                   
+  eq.js                  |     100 |      100 |     100 |     100 |                   
+  filter.js              |     100 |       75 |     100 |     100 | 27                
+  isArguments.js         |       0 |        0 |       0 |       0 | 20                
+  isArrayLike.js         |       0 |        0 |       0 |       0 | 27                
+  isBuffer.js            |   85.71 |    82.35 |       0 |     100 | 13-33             
+  isLength.js            |      50 |        0 |       0 |      50 | 29                
+  isObject.js            |       0 |        0 |       0 |       0 | 25-26             
+  isObjectLike.js        |       0 |        0 |       0 |       0 | 24                
+  isSymbol.js            |     100 |       75 |     100 |     100 | 20                
+  isTypedArray.js        |      60 |       50 |       0 |      60 | 27-28             
+  keys.js                |       0 |        0 |       0 |       0 | 32                
+  reduce.js              |     100 |       50 |     100 |     100 | 39                
+  slice.js               |   81.25 |    43.75 |     100 |   81.25 | 24,30,33          
+  toFinite.js            |   66.66 |    41.66 |     100 |   66.66 | 30,34-35          
+  toInteger.js           |     100 |       50 |     100 |     100 | 32                
+  toNumber.js            |   44.44 |     4.54 |     100 |   44.44 | 48-60             
+  toString.js            |      90 |    83.33 |     100 |   88.88 | 36                
+  upperFirst.js          |     100 |      100 |     100 |     100 |                   
+  words.js               |   85.71 |       50 |     100 |   85.71 | 35                
+ src/.internal           |   63.49 |    32.41 |   43.47 |   63.49 |                   
+  arrayLikeKeys.js       |    6.66 |        0 |       0 |    6.66 | 18-40             
+  arrayReduce.js         |   85.71 |       50 |     100 |   85.71 | 17                
+  asciiToArray.js        |       0 |      100 |       0 |       0 | 9                 
+  baseAssignValue.js     |   66.66 |       50 |     100 |   66.66 | 12                
+  baseEach.js            |       0 |        0 |       0 |       0 | 13-28             
+  baseFor.js             |       0 |        0 |       0 |       0 | 13-24             
+  baseForOwn.js          |       0 |        0 |       0 |       0 | 13                
+  baseReduce.js          |       0 |        0 |       0 |       0 | 15-20             
+  baseToNumber.js        |      50 |       25 |     100 |      50 | 18-21             
+  baseToString.js        |      20 |        0 |       0 |      20 | 19-30             
+  castSlice.js           |       0 |        0 |       0 |       0 | 13-15             
+  createCaseFirst.js     |   85.71 |       50 |     100 |   85.71 | 15                
+  createMathOperation.js |   61.53 |    68.75 |     100 |   61.53 | 15,18,21,24-25    
+  freeGlobal.js          |     100 |      100 |     100 |     100 |                   
+  getTag.js              |      25 |        0 |       0 |      25 | 11-14             
+  hasUnicode.js          |     100 |      100 |     100 |     100 |                   
+  isIndex.js             |      40 |        0 |       0 |      40 | 16-19             
+  nodeTypes.js           |     100 |    80.95 |     100 |     100 | 21-24             
+  root.js                |     100 |       50 |     100 |     100 | 8-11              
+  stringToArray.js       |       0 |        0 |       0 |       0 | 13                
+  unicodeToArray.js      |   95.83 |        0 |       0 |   95.83 | 40                
+  unicodeWords.js        |     100 |      100 |     100 |     100 |                   
+-------------------------|---------|----------|---------|---------|-------------------
+\end{lstlisting}
+	\caption{Test coverage report.}
+	\label{lst:coverage-report}
+\end{figure}
+
+\newpage
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
