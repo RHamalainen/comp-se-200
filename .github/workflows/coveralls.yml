@@ -8,6 +8,6 @@ jobs:
       - uses: actions/setup-node@v3
       - run: npm install
       - run: npm test -- --coverage && coveralls < coverage/lcov.info
-      - uses: coverallapp/github-action@main
+      - uses: coverallsapp/github-action@1.1.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
