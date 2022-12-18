@@ -7,3 +7,4 @@ const users = [
 ];
 
 test("count objects using predicate", () => { expect(countBy(users, value => value.y)).toBe({"true": 2, "false": 1}); });
+test("count objects using predicate", () => { expect(countBy(users, value => !value.y)).toBe({"true": 1, "false": 2}); });

@@ -8,3 +8,4 @@ test("split string to words", () => { expect(words("ab. cd")).toStrictEqual(["ab
 test("split string to words", () => { expect(words("ab: cd")).toStrictEqual(["ab", "cd"]); });
 test("split string to words", () => { expect(words("ab; cd")).toStrictEqual(["ab", "cd"]); });
 test("split string to words", () => { expect(words("ab-cd")).toStrictEqual(["ab", "cd"]); });
+test("split string to words", () => { expect(words(undefined)).toStrictEqual(undefined); });
